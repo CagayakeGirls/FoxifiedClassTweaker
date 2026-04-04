@@ -1,0 +1,21 @@
+plugins {
+	id "java-library"
+}
+
+base.archivesName = "$project.archives_name-$project.name"
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+
+}
+
+jar {
+	manifest {
+		attributes([
+				"FMLModType": "LIBRARY"
+		])
+	}
+}

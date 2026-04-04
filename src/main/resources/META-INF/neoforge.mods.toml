@@ -1,0 +1,31 @@
+modLoader = "javafml"
+loaderVersion = "[1,)"
+#issueTrackerURL = ""
+license = "CC0-1.0"
+
+[[mods]]
+modId = "foxified_classtweaker"
+version = "${version}"
+displayName = "FoxifiedClassTweaker"
+authors = "CagayakeGirls"
+description = '''
+Fabric's ClassTweaker support for NeoForge. Provides compatibility layer for Fabric Class-Tweaker mods on FML.
+'''
+logoFile = "assets/template_mod/icon.png"
+
+[[dependencies.foxified_classtweaker]]
+modId = "neoforge"
+type = "required"
+versionRange = "[26.1,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.foxified_classtweaker]]
+modId = "minecraft"
+type = "required"
+versionRange = "[26.1,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[foxified.classtweaker]]
+file="example.classtweaker"

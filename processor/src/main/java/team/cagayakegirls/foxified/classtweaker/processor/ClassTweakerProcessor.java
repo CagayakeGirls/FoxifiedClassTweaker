@@ -13,8 +13,6 @@ import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.ClassNode;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,11 +27,8 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-final class ClassTweakerProcessor implements ClassProcessor {
-	private static final Logger LOGGER = LoggerFactory.getLogger("FoxifiedClassTweaker");
+public final class ClassTweakerProcessor implements ClassProcessor {
 	private static final ProcessorName NAME = new ProcessorName("foxified_classtweaker", "processor");
-	private static final String MODS_TOML = "META-INF/neoforge.mods.toml";
-	private static final String SECTION_HEADER = "[[foxified.classtweaker]]";
 	private static final Pattern QUOTED_VALUE = Pattern.compile("\"([^\"]+)\"|'([^']+)'");
 
 	private final ClassTweaker classTweaker;
@@ -45,7 +40,7 @@ final class ClassTweakerProcessor implements ClassProcessor {
 	}
 
 	@Nullable
-	static ClassTweakerProcessor create() {
+	public static ClassTweakerProcessor create() {
 		ClassTweaker classTweaker = ClassTweaker.newInstance();
 		ClassTweakerReader reader = ClassTweakerReader.create(classTweaker);
 		int loadedCount = loadFromLoadingModList(reader);
@@ -56,12 +51,12 @@ final class ClassTweakerProcessor implements ClassProcessor {
 		}
 
 		if (loadedCount == 0) {
-			LOGGER.info("No 'foxified.classtweaker' entries found in NeoForge mod metadata");
+			Contexts.LOGGER.info("No 'foxified.classtweaker' entries found in NeoForge mod metadata");
 			return null;
 		}
 
 		Set<String> targets = classTweaker.getTargets();
-		LOGGER.info("Loaded {} ClassTweaker file(s), tracking {} target class(es)", loadedCount, targets.size());
+		Contexts.LOGGER.info("Loaded {} ClassTweaker file(s), tracking {} target class(es)", loadedCount, targets.size());
 		return new ClassTweakerProcessor(classTweaker, targets);
 	}
 
@@ -85,7 +80,7 @@ final class ClassTweakerProcessor implements ClassProcessor {
 			context.audit("foxified_class_tweaker", context.type().getInternalName());
 			return ComputeFlags.SIMPLE_REWRITE;
 		} catch (Exception e) {
-			LOGGER.error("Failed to transform {}", context.type().getClassName(), e);
+			Contexts.LOGGER.error("Failed to transform {}", context.type().getClassName(), e);
 			return ComputeFlags.NO_REWRITE;
 		}
 	}
@@ -125,15 +120,11 @@ final class ClassTweakerProcessor implements ClassProcessor {
 
 	private static List<URL> enumerateModsTomlResources(ClassLoader classLoader) throws IOException {
 		List<URL> urls = new ArrayList<>();
-		addResources(classLoader, MODS_TOML, urls);
-		return urls;
-	}
-
-	private static void addResources(ClassLoader classLoader, String resourceName, List<URL> urls) throws IOException {
-		Enumeration<URL> resources = classLoader.getResources(resourceName);
+		Enumeration<URL> resources = classLoader.getResources(Contexts.MODS_TOML);
 		while (resources.hasMoreElements()) {
 			urls.add(resources.nextElement());
 		}
+		return urls;
 	}
 
 	private static List<String> readClassTweakerPaths(byte[] metadataContent) {
@@ -149,7 +140,7 @@ final class ClassTweakerProcessor implements ClassProcessor {
 			}
 
 			if (noComment.startsWith("[[") && noComment.endsWith("]]")) {
-				inTargetSection = SECTION_HEADER.equals(noComment);
+				inTargetSection = Contexts.CLASSTWEAKER_HEADER.equals(noComment);
 				continue;
 			}
 
@@ -188,34 +179,34 @@ final class ClassTweakerProcessor implements ClassProcessor {
 			var contents = modFile.getContents();
 			try {
 				List<? extends IConfigurable> sectionEntries = modFileInfo.getConfigList("foxified", "classtweaker");
-				List<String> tweakerPaths = new ArrayList<>(sectionEntries.size());
+				List<String> classTweakerPaths = new ArrayList<>(sectionEntries.size());
 				for (var entry : sectionEntries) {
 					Optional<String> file = entry.getConfigElement("file");
 					if (file.isEmpty() || file.get().isBlank()) {
-						LOGGER.warn("Invalid 'foxified.classtweaker' entry in '{}': missing file", modFile.getFileName());
+						Contexts.LOGGER.warn("Invalid 'foxified.classtweaker' entry in '{}': missing file", modFile.getFileName());
 						continue;
 					}
-					tweakerPaths.add(normalizePath(file.get()));
+					classTweakerPaths.add(normalizePath(file.get()));
 				}
 
-				for (String path : tweakerPaths) {
+				for (String path : classTweakerPaths) {
 					String dedupe = modFile.getFileName() + "::" + path;
 					if (!loadedEntries.add(dedupe)) {
 						continue;
 					}
 
-					byte[] tweakerContent = contents.readFile(path);
-					if (tweakerContent == null) {
-						LOGGER.warn("ClassTweaker file '{}' declared by '{}' was not found", path, modFile.getFileName());
+					byte[] content = contents.readFile(path);
+					if (content == null) {
+						Contexts.LOGGER.warn("ClassTweaker file '{}' declared by '{}' was not found", path, modFile.getFileName());
 						continue;
 					}
 
-					reader.read(tweakerContent);
+					reader.read(content);
 					loadedCount++;
-					LOGGER.debug("Loaded ClassTweaker '{}' from '{}'", path, modFile.getFileName());
+					Contexts.LOGGER.debug("Loaded ClassTweaker '{}' from '{}'", path, modFile.getFileName());
 				}
 			} catch (Exception e) {
-				LOGGER.warn("Failed to process mod file '{}': {}", modFile.getFileName(), e.toString());
+				Contexts.LOGGER.warn("Failed to process mod file '{}': {}", modFile.getFileName(), e.toString());
 			}
 		}
 
@@ -231,8 +222,8 @@ final class ClassTweakerProcessor implements ClassProcessor {
 
 			for (URL metadataUrl : metadataFiles) {
 				try (InputStream input = metadataUrl.openStream()) {
-					List<String> tweakerPaths = readClassTweakerPaths(input.readAllBytes());
-					for (String path : tweakerPaths) {
+					List<String> classTweakerPaths = readClassTweakerPaths(input.readAllBytes());
+					for (String path : classTweakerPaths) {
 						String dedupe = metadataUrl + "::" + path;
 						if (!loadedEntries.add(dedupe)) {
 							continue;
@@ -240,22 +231,22 @@ final class ClassTweakerProcessor implements ClassProcessor {
 
 						byte[] content = openClassTweakerBytes(path, classLoader);
 						if (content == null) {
-							LOGGER.warn("ClassTweaker file '{}' declared by '{}' was not found", path, metadataUrl);
+							Contexts.LOGGER.warn("ClassTweaker file '{}' declared by '{}' was not found", path, metadataUrl);
 							continue;
 						}
 
 						reader.read(content);
 						loadedCount++;
-						LOGGER.debug("Loaded ClassTweaker '{}' from '{}'", path, metadataUrl);
+						Contexts.LOGGER.debug("Loaded ClassTweaker '{}' from '{}'", path, metadataUrl);
 					}
 				} catch (Exception e) {
-					LOGGER.warn("Failed to process '{}': {}", metadataUrl, e.toString());
+					Contexts.LOGGER.warn("Failed to process '{}': {}", metadataUrl, e.toString());
 				}
 			}
 
 			return loadedCount;
 		} catch (IOException e) {
-			LOGGER.warn("Failed classpath fallback scan: {}", e.toString());
+			Contexts.LOGGER.warn("Failed classpath fallback scan: {}", e.toString());
 			return 0;
 		}
 	}

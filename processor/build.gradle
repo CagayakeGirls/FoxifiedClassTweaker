@@ -9,7 +9,7 @@ repositories {
 }
 
 dependencies {
-
+	include("net.fabricmc:class-tweaker:0.2")
 }
 
 jar {

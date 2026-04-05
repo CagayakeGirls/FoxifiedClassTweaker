@@ -3,12 +3,10 @@ plugins {
 	id 'maven-publish'
 }
 
-base.archivesName = project.archives_name
-
 allprojects {
 	apply plugin: 'dev.architectury.loom-no-remap'
 
-	version = project.mod_version
+	version = "$project.mod_version"
 	group = project.maven_group
 
 	repositories {
@@ -20,7 +18,7 @@ allprojects {
 
 	dependencies {
 		// To change the versions see the gradle.properties file
-		minecraft "com.mojang:minecraft:${project.minecraft_version}"
+		minecraft "com.mojang:minecraft:$project.minecraft_version"
 		neoForge "net.neoforged:neoforge:$project.neoforge_version"
 
 		implementation("net.fabricmc:class-tweaker:0.2")
@@ -41,11 +39,12 @@ allprojects {
 	}
 }
 
+base.archivesName = project.archives_name
+
 dependencies {
 	implementation project(":processor")
 
 	include(project(":processor")) { transitive = false }
-	include("net.fabricmc:class-tweaker:0.2")
 }
 
 processResources {

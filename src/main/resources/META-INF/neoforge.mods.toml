@@ -7,9 +7,9 @@ license = "CC0-1.0"
 modId = "foxified_classtweaker"
 version = "${version}"
 displayName = "FoxifiedClassTweaker"
-authors = "CagayakeGirls"
+authors = "CagayakeGirls, TexTrue"
 description = '''
-Fabric's ClassTweaker support for NeoForge. Provides compatibility layer for Fabric Class-Tweaker mods on FML.
+Provide Fabric's ClassTweaker support for FancyModLoader.
 '''
 logoFile = "assets/template_mod/icon.png"
 

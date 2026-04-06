@@ -1,5 +1,8 @@
+import com.hypherionmc.modpublisher.properties.CurseEnvironment
+
 plugins {
 	id 'dev.architectury.loom-no-remap' version '1.14-SNAPSHOT'
+	id 'com.hypherionmc.modutils.modpublisher' version '2.+'
 	id 'maven-publish'
 }
 
@@ -82,4 +85,23 @@ jar {
 	from("LICENSE") {
 		rename { "${it}_${project.name}"}
 	}
+}
+
+publisher {
+	apiKeys {
+		modrinth System.getenv("MODRINTH_TOKEN")
+		curseforge System.getenv("CURSEFORGE_TOKEN")
+	}
+
+	setCurseID("1506215")
+	setModrinthID("bsJhdceD")
+	setVersionType("alpha")
+	setChangelog(file("CHANGELOG.md").getText("UTF-8"))
+	setVersion("${project.version}")
+	setDisplayName("${project.version}")
+	setGameVersions("26.1")
+	setLoaders(loom.platform.get().id())
+	setCurseEnvironment(CurseEnvironment.BOTH)
+	setArtifact(jar)
+	addAdditionalFile(sourcesJar)
 }

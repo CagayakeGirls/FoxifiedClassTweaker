@@ -1,2 +1,2 @@
 ## Changelog
-- Initial release
+- try fix maven publish artifactId issue

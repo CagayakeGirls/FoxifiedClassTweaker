@@ -44,13 +44,6 @@ allprojects {
 
 	// configure the maven publication
 	publishing {
-		publications {
-			create("mavenJava", MavenPublication) {
-				from components.java
-				artifactId = base.archivesName
-			}
-		}
-
 		// See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
 		repositories {
 			maven {
@@ -85,6 +78,15 @@ processResources {
 jar {
 	from("LICENSE") {
 		rename { "${it}_${project.name}"}
+	}
+}
+
+publishing {
+	publications {
+		create("mavenJava", MavenPublication) {
+			from components.java
+			artifactId = project.archives_name
+		}
 	}
 }
 

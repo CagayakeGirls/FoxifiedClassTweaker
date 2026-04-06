@@ -19,3 +19,12 @@ jar {
 		])
 	}
 }
+
+publishing {
+	publications {
+		create("mavenJava", MavenPublication) {
+			from components.java
+			artifactId = "$project.archives_name-$project.name"
+		}
+	}
+}

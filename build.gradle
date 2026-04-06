@@ -47,6 +47,7 @@ allprojects {
 		publications {
 			create("mavenJava", MavenPublication) {
 				from components.java
+				artifactId = base.archivesName
 			}
 		}
 

@@ -1,7 +1,7 @@
 modLoader = "javafml"
-loaderVersion = "[1,)"
+loaderVersion = "[10,)"
 #issueTrackerURL = ""
-license = "CC0-1.0"
+license = "Apache-2.0"
 
 [[mods]]
 modId = "foxified_classtweaker"
@@ -26,6 +26,3 @@ type = "required"
 versionRange = "[26.1,)"
 ordering = "NONE"
 side = "BOTH"
-
-[[foxified.classtweaker]]
-file = "example.classtweaker"

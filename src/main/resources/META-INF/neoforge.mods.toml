@@ -11,7 +11,7 @@ authors = "CagayakeGirls, TexTrue"
 description = '''
 Provide Fabric's ClassTweaker support for FancyModLoader.
 '''
-logoFile = "assets/template_mod/icon.png"
+logoFile = "assets/foxified_classtweaker/icon.png"
 
 [[dependencies.foxified_classtweaker]]
 modId = "neoforge"
@@ -28,4 +28,4 @@ ordering = "NONE"
 side = "BOTH"
 
 [[foxified.classtweaker]]
-file="example.classtweaker"
+file = "example.classtweaker"

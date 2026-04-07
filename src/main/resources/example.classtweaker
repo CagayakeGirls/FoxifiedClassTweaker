@@ -1,2 +1,0 @@
-classTweaker	v1	official
-accessible field net/minecraft/server/network/ServerCommonPacketListenerImpl server Lnet/minecraft/server/MinecraftServer;

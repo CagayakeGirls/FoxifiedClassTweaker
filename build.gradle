@@ -25,7 +25,7 @@ allprojects {
 		minecraft "com.mojang:minecraft:$project.minecraft_version"
 		neoForge "net.neoforged:neoforge:$project.neoforge_version"
 
-		implementation("net.fabricmc:class-tweaker:0.2")
+		implementation("net.fabricmc:class-tweaker:$project.classtweaker_version")
 	}
 
 	tasks.withType(JavaCompile).configureEach {

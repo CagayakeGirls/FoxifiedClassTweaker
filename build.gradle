@@ -1,7 +1,7 @@
 import com.hypherionmc.modpublisher.properties.CurseEnvironment
 
 plugins {
-	id 'dev.architectury.loom-no-remap' version '1.14-SNAPSHOT'
+	id 'dev.architectury.loom-no-remap' version '1.17-SNAPSHOT'
 	id 'com.hypherionmc.modutils.modpublisher' version '2.+'
 	id 'maven-publish'
 }
@@ -102,7 +102,7 @@ publisher {
 	setChangelog(file("CHANGELOG.md").getText("UTF-8"))
 	setVersion("${project.version}")
 	setDisplayName("${project.version}")
-	setGameVersions("26.1", "26.1.1")
+	setGameVersions("26.1", "26.1.1", "26.1.2", "26.2")
 	setLoaders(loom.platform.get().id())
 	setCurseEnvironment(CurseEnvironment.BOTH)
 	setArtifact(jar)

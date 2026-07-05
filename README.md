@@ -29,11 +29,11 @@ repositories {
 }
 
 dependencies {
-    include "team.cagayakegirls.foxified:foxified-class-tweaker-processor:<version>"
+    include "team.cagayakegirls.foxified:foxified-classtweaker-processor:<version>"
 }
 ```
 
-Currently, only FancyModLoader 10.x is supported (only working with official mappings).
+Currently, FancyModLoader 10 and above version is supported (FML 10 env only working with official mappings).
 
 Please note that you must have ClassTweaker/AccessWidener (theoretically compatible with AW) files in the corresponding directory.
 

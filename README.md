@@ -29,7 +29,7 @@ repositories {
 }
 
 dependencies {
-    include "team.cagayakegirls.foxified:foxified-class-tweaker-processor:0.1.0-alpha.2"
+    include "team.cagayakegirls.foxified:foxified-class-tweaker-processor:<version>"
 }
 ```
 

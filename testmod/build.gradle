@@ -1,0 +1,21 @@
+plugins {
+	id "java-library"
+}
+
+base.archivesName = "$project.archives_name-$project.name"
+
+dependencies {
+	implementation project(":processor")
+	include(project(":processor")) { transitive = false }
+
+	// ClassTweaker for API
+	implementation("net.fabricmc:class-tweaker:$project.classtweaker_version")
+}
+
+jar {
+	manifest {
+		attributes([
+				"FMLModType": "MOD"
+		])
+	}
+}

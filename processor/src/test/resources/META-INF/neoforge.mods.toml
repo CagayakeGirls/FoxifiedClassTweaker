@@ -1,0 +1,12 @@
+modLoader = "javafml"
+loaderVersion = "[10,)"
+license = "Apache-2.0"
+
+[[mods]]
+modId = "test_mod"
+version = "1.0.0"
+displayName = "Test Mod"
+authors = "Test"
+
+[[foxified.classtweaker]]
+file = "test.classtweaker"

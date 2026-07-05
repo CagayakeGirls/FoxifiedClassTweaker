@@ -1,0 +1,29 @@
+modLoader = "javafml"
+loaderVersion = "[10,)"
+license = "Apache-2.0"
+
+[[mods]]
+modId = "foxified_classtweaker_testmod"
+version = "1.0.0"
+displayName = "FoxifiedClassTweaker Test Mod"
+authors = "CagayakeGirls"
+description = '''
+Test mod for FoxifiedClassTweaker
+'''
+
+[[foxified.classtweaker]]
+file = "foxified_classtweaker_testmod.classtweaker"
+
+[[dependencies.foxified_classtweaker_testmod]]
+modId = "neoforge"
+type = "required"
+versionRange = "[26.1,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.foxified_classtweaker_testmod]]
+modId = "minecraft"
+type = "required"
+versionRange = "[26.1,)"
+ordering = "NONE"
+side = "BOTH"

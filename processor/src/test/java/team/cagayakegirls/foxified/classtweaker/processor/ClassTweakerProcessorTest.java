@@ -3,9 +3,18 @@ package team.cagayakegirls.foxified.classtweaker.processor;
 import net.neoforged.neoforgespi.transformation.ClassProcessor;
 import net.neoforged.neoforgespi.transformation.ProcessorName;
 import org.junit.jupiter.api.Test;
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.FieldNode;
+import org.objectweb.asm.tree.FrameNode;
+import org.objectweb.asm.tree.InsnNode;
+import org.objectweb.asm.tree.JumpInsnNode;
+import org.objectweb.asm.tree.LabelNode;
+import org.objectweb.asm.tree.MethodNode;
+import org.objectweb.asm.tree.VarInsnNode;
 import team.cagayakegirls.foxified.classtweaker.processor.utils.ASMHelper;
 
 import java.util.Set;
@@ -54,6 +63,43 @@ class ClassTweakerProcessorTest {
 
         assertNotNull(bytes);
         assertTrue(bytes.length > 0);
+    }
+
+    @Test
+    void testNodeToBytesRecomputesMaxsForFrames() {
+        // Regression test: Mixin-generated methods can carry stack map frames while
+        // maxStack/maxLocals are still 0 (frames are computed after generation). With
+        // ClassWriter(0) the emitted StackMapTable is unreadable, so ClassReader throws
+        // ArrayIndexOutOfBoundsException and the target class is corrupted.
+        ClassNode classNode = new ClassNode();
+        classNode.version = Opcodes.V21;
+        classNode.access = Opcodes.ACC_PUBLIC;
+        classNode.name = "TestFrames";
+        classNode.superName = "java/lang/Object";
+
+        MethodNode method = new MethodNode(
+                Opcodes.ACC_PUBLIC | Opcodes.ACC_STATIC, "test", "(Ljava/lang/Object;)I", null, null);
+        LabelNode elseLabel = new LabelNode();
+        method.instructions.add(new VarInsnNode(Opcodes.ALOAD, 0));
+        method.instructions.add(new JumpInsnNode(Opcodes.IFNULL, elseLabel));
+        method.instructions.add(new InsnNode(Opcodes.ICONST_1));
+        method.instructions.add(new InsnNode(Opcodes.IRETURN));
+        method.instructions.add(elseLabel);
+        method.instructions.add(new FrameNode(Opcodes.F_APPEND, 1, new Object[] {"java/lang/Object"}, 0, null));
+        method.instructions.add(new InsnNode(Opcodes.ICONST_0));
+        method.instructions.add(new InsnNode(Opcodes.IRETURN));
+        // maxStack and maxLocals are intentionally left at 0.
+        classNode.methods.add(method);
+
+        byte[] bytes = ASMHelper.nodeToBytes(classNode);
+
+        assertDoesNotThrow(() -> new ClassReader(bytes).accept(new ClassVisitor(Opcodes.ASM9) {
+            @Override
+            public MethodVisitor visitMethod(
+                    int access, String name, String descriptor, String signature, String[] exceptions) {
+                return new MethodNode(Opcodes.ASM9, access, name, descriptor, signature, exceptions);
+            }
+        }, 0));
     }
 
     @Test

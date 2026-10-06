@@ -32,14 +32,14 @@ class ClassTweakerLoadingTest {
 
     @Test
     void testLoadClassTweakerFile() throws IOException {
-        // 从测试资源加载 .classtweaker 文件
+        // Load the .classtweaker file from the test resources
         byte[] content = loadResource("test.classtweaker");
         assertNotNull(content, "Should be able to load test.classtweaker");
 
-        // 解析文件
+        // Parse File
         reader.read(content);
 
-        // 验证解析成功
+        // Verification and parsing were successful
         assertFalse(classTweaker.getTargets().isEmpty(), "Should have targets after loading");
     }
 
@@ -48,7 +48,7 @@ class ClassTweakerLoadingTest {
         byte[] content = loadResource("test.classtweaker");
         String text = new String(content, StandardCharsets.UTF_8);
 
-        // 验证文件格式
+        // Verify File Format
         assertTrue(text.startsWith("classTweaker\tv1\tofficial"), "File should start with classTweaker header");
         assertTrue(text.contains("accessible field"), "File should contain accessible field rule");
         assertTrue(text.contains("accessible method"), "File should contain accessible method rule");
@@ -59,11 +59,11 @@ class ClassTweakerLoadingTest {
         byte[] content = loadResource("test.classtweaker");
         reader.read(content);
 
-        // 验证目标类被正确识别
+        // Verify that the target class is correctly identified
         var targets = classTweaker.getTargets();
         assertFalse(targets.isEmpty(), "Targets should not be empty");
 
-        // 验证包含预期的目标类
+        // Verify that it contains the expected target class
         boolean containsServerCommonPacketListenerImpl = targets.stream()
                 .anyMatch(t -> t.contains("ServerCommonPacketListenerImpl"));
         assertTrue(containsServerCommonPacketListenerImpl,
@@ -72,43 +72,43 @@ class ClassTweakerLoadingTest {
 
     @Test
     void testClassTweakerTransformation() throws IOException {
-        // 加载 ClassTweaker 配置
+        // Load the ClassTweaker configuration
         byte[] content = loadResource("test.classtweaker");
         reader.read(content);
 
-        // 创建一个模拟的类节点
+        // Create a simulated class node
         ClassNode classNode = new ClassNode();
         classNode.version = Opcodes.V21;
         classNode.access = Opcodes.ACC_PUBLIC;
         classNode.name = "net/minecraft/server/network/ServerCommonPacketListenerImpl";
         classNode.superName = "java/lang/Object";
 
-        // 序列化并重新解析
+        // Serialization and deserialization
         byte[] original = ASMHelper.nodeToBytes(classNode);
         ASMHelper.cleanNode(classNode);
 
-        // 使用 ClassTweaker 的 visitor 进行转换
+        // Performing transformations using ClassTweaker's visitor
         ClassVisitor visitor = classTweaker.createClassVisitor(Opcodes.ASM9, classNode, null);
         new ClassReader(original).accept(visitor, 0);
 
-        // 验证转换后的类节点
+        // Validate the converted class nodes
         assertEquals("net/minecraft/server/network/ServerCommonPacketListenerImpl", classNode.name);
     }
 
     @Test
     void testLoadMultipleClassTweakerFiles() throws IOException {
-        // 加载第一个文件
+        // Load the first file
         byte[] content1 = loadResource("test.classtweaker");
         reader.read(content1);
         int targetsAfterFirst = classTweaker.getTargets().size();
 
-        // 创建第二个 ClassTweaker 配置（模拟）
+        // Create a second ClassTweaker configuration (simulation)
         ClassTweaker classTweaker2 = ClassTweaker.newInstance();
         ClassTweakerReader reader2 = ClassTweakerReader.create(classTweaker2);
         byte[] content2 = loadResource("test.classtweaker");
         reader2.read(content2);
 
-        // 验证两个配置都能正常加载
+        // Verify that both configurations load correctly
         assertFalse(classTweaker.getTargets().isEmpty(), "First config should have targets");
         assertFalse(classTweaker2.getTargets().isEmpty(), "Second config should have targets");
     }
@@ -118,7 +118,7 @@ class ClassTweakerLoadingTest {
         byte[] tomlContent = loadResource("META-INF/neoforge.mods.toml");
         String toml = new String(tomlContent, StandardCharsets.UTF_8);
 
-        // 验证 TOML 文件包含 ClassTweaker 配置
+        // Verify that the TOML file contains the ClassTweaker configuration
         assertTrue(toml.contains("[[foxified.classtweaker]]"), "TOML should contain foxified.classtweaker section");
         assertTrue(toml.contains("file = \"test.classtweaker\""), "TOML should contain file reference");
     }
@@ -128,7 +128,7 @@ class ClassTweakerLoadingTest {
         byte[] tomlContent = loadResource("META-INF/neoforge.mods.toml");
         String toml = new String(tomlContent, StandardCharsets.UTF_8);
 
-        // 解析 TOML 获取 ClassTweaker 文件路径
+        // Parsing TOML to Retrieve the ClassTweaker File Path
         String[] lines = toml.split("\\R");
         boolean foundClassTweakerSection = false;
         String filePath = null;
@@ -153,7 +153,7 @@ class ClassTweakerLoadingTest {
     }
 
     /**
-     * 从测试资源加载文件
+     * Loading Files from Test Resources
      */
     private byte[] loadResource(String path) throws IOException {
         try (InputStream is = getClass().getClassLoader().getResourceAsStream(path)) {

@@ -1,2 +1,2 @@
 ## Changelog
-- update neoforge to 26.3.0.x
+- Fix ClassFormatError crash by recomputing maxs in ASMHelper.nodeToBytes ([PR#2](https://github.com/CagayakeGirls/FoxifiedClassTweaker/pull/2) by liking008)
